@@ -1,5 +1,7 @@
 ﻿namespace Sitecore.Support.Pipelines.PreprocessRequest
 {
+    using Collections;
+    using Data.Managers;
     using Sitecore;
     using Sitecore.Configuration;
     using Sitecore.Diagnostics;
@@ -14,6 +16,7 @@
 
     public class StripLanguage : PreprocessRequestProcessor
     {
+        private static CultureInfo[] customCultures = CultureInfo.GetCultures(CultureTypes.UserCustomCulture);
         private static Language ExtractLanguage(HttpRequest request)
         {
             Assert.ArgumentNotNull(request, "request");
@@ -29,10 +32,12 @@
                 {
                     return null;
                 }
-                if ((language.CultureInfo.LCID != 0x1000) && !language.CultureInfo.CultureTypes.HasFlag(CultureTypes.UserCustomCulture))
+
+                if ((language.CultureInfo.LCID == 0x1000) || language.CultureInfo.CultureTypes.HasFlag(CultureTypes.UserCustomCulture))
                 {
-                    return language;
+                    return customCultures.Contains(language.CultureInfo) ? language : null;
                 }
+                return language;                
             }
             return null;
         }
@@ -40,12 +45,13 @@
         private static bool IsValidCultureInfo(string languageName)
         {
             string[] strArray = StringUtil.Divide(languageName, '-', true);
-            if (strArray.Length < 2)
+            if (strArray.Length < 1)
             {
                 return false;
             }
-            CultureInfo cultureInfo = Language.GetCultureInfo(strArray[0].Trim());
-            return ((cultureInfo.LCID != 0x1000) && !cultureInfo.CultureTypes.HasFlag(CultureTypes.UserCustomCulture));
+            int langLen = strArray[0].Trim().Length;
+
+            return (langLen == 2 || langLen == 3);
         }
 
         public override void Process(PreprocessRequestArgs args)
