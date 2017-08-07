@@ -51,7 +51,7 @@
             }
             int langLen = strArray[0].Trim().Length;
 
-            return (langLen == 2 || langLen == 3);
+            return (langLen == 1 || langLen == 2 || langLen == 3);
         }
 
         public override void Process(PreprocessRequestArgs args)
