@@ -1,4 +1,4 @@
-# Sitecore.Support.449251
+# Sitecore.Support.449251.128620
 StripLanguage processor resolves invalid languages for URLs with dash in .NET 4.6
 
 ## License  
